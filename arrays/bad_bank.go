@@ -32,3 +32,17 @@ func applyTransaction(a Account, transaction Transaction) Account {
 	}
 	return a
 }
+
+func applyAchar(accumulator string, current string) string {
+	// fmt.Println(accumulator, current)
+	newString := accumulator + "s" + current
+	return newString
+}
+
+func ApplyStringToCollection(initialValue string, collection []string, stringToAdd string) string {
+	return Reduce(
+		collection,
+		applyAchar,
+		initialValue,
+	)
+}

@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestBadBank(t *testing.T) {
 	var (
@@ -21,4 +23,10 @@ func TestBadBank(t *testing.T) {
 	AssertEqual(t, newBalanceFor(riya), 200)
 	AssertEqual(t, newBalanceFor(chris), 0)
 	AssertEqual(t, newBalanceFor(adil), 175)
+}
+
+func TestAddS(t *testing.T) {
+	letters := []string{"A", "B", "C", "D", "E"}
+	results := ApplyStringToCollection("", letters, "s")
+	AssertEqual(t, results, "sAsBsCsDsE")
 }
