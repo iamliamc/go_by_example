@@ -26,6 +26,9 @@ func TestArea(t *testing.T) {
 		{name: "Triangle", shape: Triangle{Base: 12, Height: 6}, hasArea: 36.0},
 	}
 
+	// Equivalent to:
+	// for i := 0; i < len(areaTests); i++ {
+	// 	tt := areaTests[i]
 	for _, tt := range areaTests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.shape.Area()
