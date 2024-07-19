@@ -20,7 +20,10 @@ func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
 		}(url)
 	}
 
+	// is there a way to read everything from the channel without using len(urls)
+	// there is... var wg sync.WaitGroup
 	for i := 0; i < len(urls); i++ {
+		// Receive expression this receives the result values from the channel
 		r := <-resultChannel
 		results[r.string] = r.bool
 	}
