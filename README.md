@@ -6,3 +6,5 @@ Run all tests
 go test ./...
 go test ./... -bench=. 
 go test -cover
+go test race
+go vet 

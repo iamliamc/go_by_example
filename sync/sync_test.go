@@ -7,7 +7,7 @@ import (
 
 func TestCounter(t *testing.T) {
 	t.Run("incrementing the counter 3 times leaves it at 3", func(t *testing.T) {
-		counter := Counter{}
+		counter := NewCounter()
 		counter.Inc()
 		counter.Inc()
 		counter.Inc()
@@ -29,11 +29,11 @@ func TestCounter(t *testing.T) {
 			}()
 		}
 		wg.Wait()
-		assertCounter(t, counter, expected)
+		assertCounter(t, &counter, expected)
 	})
 }
 
-func assertCounter(t *testing.T, got Counter, want int) {
+func assertCounter(t *testing.T, got *Counter, want int) {
 	t.Helper()
 	if got.Value() != want {
 		t.Errorf("got %d, want %d", got.Value(), want)
