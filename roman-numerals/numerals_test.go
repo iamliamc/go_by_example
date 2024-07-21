@@ -1,53 +1,104 @@
 package v1
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
 
 func TestRomanNumerals(t *testing.T) {
 	cases := []struct {
-		Description string
-		Arabic      int
-		Want        string
+		Arabic int
+		Roman  string
 	}{
-		{"1 gets converted to I", 1, "I"},
-		{"2 gets converted to II", 2, "II"},
-		{"3 gets converted to III", 3, "III"},
-		{"4 gets converted to IV (can't repeat more than 3 times)", 4, "IV"},
-		{"5 gets converted to V", 5, "V"},
-		{"6 gets converted to VI", 6, "VI"},
-		{"7 gets converted to VII", 7, "VII"},
-		{"8 gets converted to VIII", 8, "VIII"},
+		{Arabic: 1, Roman: "I"},
+		{Arabic: 2, Roman: "II"},
+		{Arabic: 3, Roman: "III"},
+		{Arabic: 4, Roman: "IV"},
+		{Arabic: 5, Roman: "V"},
+		{Arabic: 6, Roman: "VI"},
+		{Arabic: 7, Roman: "VII"},
+		{Arabic: 8, Roman: "VIII"},
+		{Arabic: 9, Roman: "IX"},
+		{Arabic: 10, Roman: "X"},
+		{Arabic: 14, Roman: "XIV"},
+		{Arabic: 18, Roman: "XVIII"},
+		{Arabic: 20, Roman: "XX"},
+		{Arabic: 39, Roman: "XXXIX"},
+		{Arabic: 40, Roman: "XL"},
+		{Arabic: 47, Roman: "XLVII"},
+		{Arabic: 49, Roman: "XLIX"},
+		{Arabic: 50, Roman: "L"},
+		{Arabic: 100, Roman: "C"},
+		{Arabic: 90, Roman: "XC"},
+		{Arabic: 400, Roman: "CD"},
+		{Arabic: 500, Roman: "D"},
+		{Arabic: 900, Roman: "CM"},
+		{Arabic: 1000, Roman: "M"},
+		{Arabic: 1984, Roman: "MCMLXXXIV"},
+		{Arabic: 3999, Roman: "MMMCMXCIX"},
+		{Arabic: 2014, Roman: "MMXIV"},
+		{Arabic: 1006, Roman: "MVI"},
+		{Arabic: 798, Roman: "DCCXCVIII"},
 	}
-
 	for _, test := range cases {
-		t.Run(test.Description, func(t *testing.T) {
+		t.Run(fmt.Sprintf("%d gets converted to %q", test.Arabic, test.Roman), func(t *testing.T) {
 			got := ConvertToRoman(test.Arabic)
-			if got != test.Want {
-				t.Errorf("got %q, want %q", got, test.Want)
+			reConverted := ConvertToArabic(got)
+			if got != test.Roman {
+				t.Errorf("got %q, want %q", got, test.Roman)
+			}
+			if test.Arabic != reConverted {
+				t.Errorf("got %q, did not convert back into itself %v", got, test.Arabic)
 			}
 		})
 	}
+}
+
+type RomanNumeral struct {
+	Value  int
+	Symbol string
+}
+
+var allRomanNumerals = []RomanNumeral{
+	{1000, "M"},
+	{900, "CM"},
+	{500, "D"},
+	{400, "CD"},
+	{100, "C"},
+	{90, "XC"},
+	{50, "L"},
+	{40, "XL"},
+	{10, "X"},
+	{9, "IX"},
+	{5, "V"},
+	{4, "IV"},
+	{1, "I"},
 }
 
 func ConvertToRoman(arabic int) string {
 
 	var result strings.Builder
 
-	for arabic > 0 {
-		switch {
-		case arabic > 4:
-			result.WriteString("V")
-			arabic -= 5
-		case arabic > 3:
-			result.WriteString("IV")
-			arabic -= 4
-		default:
-			result.WriteString("I")
-			arabic--
+	for _, numeral := range allRomanNumerals {
+		for arabic >= numeral.Value {
+			result.WriteString(numeral.Symbol)
+			arabic -= numeral.Value
 		}
 	}
 
 	return result.String()
+}
+
+func ConvertToArabic(roman string) int {
+	arabic := 0
+
+	for _, numeral := range allRomanNumerals {
+		for strings.HasPrefix(roman, numeral.Symbol) {
+			arabic += numeral.Value
+			roman = strings.TrimPrefix(roman, numeral.Symbol)
+		}
+	}
+
+	return arabic
 }
