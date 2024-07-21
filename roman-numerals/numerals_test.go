@@ -1,14 +1,14 @@
-package v1
+package numerals
 
 import (
 	"fmt"
-	"strings"
 	"testing"
+	"testing/quick"
 )
 
 func TestRomanNumerals(t *testing.T) {
 	cases := []struct {
-		Arabic int
+		Arabic uint16
 		Roman  string
 	}{
 		{Arabic: 1, Roman: "I"},
@@ -48,6 +48,7 @@ func TestRomanNumerals(t *testing.T) {
 			if got != test.Roman {
 				t.Errorf("got %q, want %q", got, test.Roman)
 			}
+			// This is in essence me doing a property test but not with a broad enough range of inputs
 			if test.Arabic != reConverted {
 				t.Errorf("got %q, did not convert back into itself %v", got, test.Arabic)
 			}
@@ -55,50 +56,20 @@ func TestRomanNumerals(t *testing.T) {
 	}
 }
 
-type RomanNumeral struct {
-	Value  int
-	Symbol string
-}
-
-var allRomanNumerals = []RomanNumeral{
-	{1000, "M"},
-	{900, "CM"},
-	{500, "D"},
-	{400, "CD"},
-	{100, "C"},
-	{90, "XC"},
-	{50, "L"},
-	{40, "XL"},
-	{10, "X"},
-	{9, "IX"},
-	{5, "V"},
-	{4, "IV"},
-	{1, "I"},
-}
-
-func ConvertToRoman(arabic int) string {
-
-	var result strings.Builder
-
-	for _, numeral := range allRomanNumerals {
-		for arabic >= numeral.Value {
-			result.WriteString(numeral.Symbol)
-			arabic -= numeral.Value
+func TestPropertiesOfConversion(t *testing.T) {
+	assertion := func(arabic uint16) bool {
+		if arabic > 3999 {
+			return true
 		}
+		t.Log("testing", arabic)
+		roman := ConvertToRoman(arabic)
+		fromRoman := ConvertToArabic(roman)
+		return fromRoman == arabic
 	}
 
-	return result.String()
-}
-
-func ConvertToArabic(roman string) int {
-	arabic := 0
-
-	for _, numeral := range allRomanNumerals {
-		for strings.HasPrefix(roman, numeral.Symbol) {
-			arabic += numeral.Value
-			roman = strings.TrimPrefix(roman, numeral.Symbol)
-		}
+	if err := quick.Check(assertion, &quick.Config{
+		MaxCount: 1000,
+	}); err != nil {
+		t.Error("failed checks", err)
 	}
-
-	return arabic
 }
